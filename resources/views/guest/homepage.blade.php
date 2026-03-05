@@ -19,8 +19,10 @@
                     </p>
 
                     <div class="hero-actions">
-                        <a class="btn btn-primary" href="#rekomendasi">Lihat kos rekomendasi</a>
-                        <a class="btn" href="#cara">Cara kerja</a>
+                        <a class="btn btn-primary" href="#rekomendasi"><span><i class="fa-solid fa-house"></i></span> Lihat kos
+                            rekomendasi</a>
+                        <a class="btn" href="#cara"><span> <i class="fa-solid fa-circle-info"></i></span> Cara
+                            kerja</a>
                     </div>
 
                     <div class="subnote">
@@ -68,7 +70,8 @@
                             </div>
 
                             <div class="full">
-                                <button class="btn btn-primary" style="width:100%" type="submit">Cari kos</button>
+                                <button class="btn btn-primary" style="width:100%" type="submit"><span><i
+                                            class="fa-solid fa-magnifying-glass"></i></span> Cari kos</button>
                             </div>
                         </form>
 
@@ -92,7 +95,8 @@
                     <h2>Rekomendasi kos hari ini</h2>
                     <p>Contoh tampilan kartu listing. Nanti tinggal loop dari database.</p>
                 </div>
-                <a class="btn" href="{{ url('/kos') }}">Lihat semua</a>
+                <a class="btn" href="{{ url('/kos') }}"><span><i class="fa-solid fa-building"></i></span> Lihat
+                    semua</a>
             </div>
 
             <div class="grid kos-grid">
@@ -118,8 +122,10 @@
                         </div>
 
                         <div class="kos-actions">
-                            <a class="btn btn-primary" href="{{ url('/kos/1') }}">Lihat detail</a>
-                            <a class="btn" href="{{ url('/kos/1') }}#lokasi">Lokasi</a>
+                            <a class="btn btn-primary" href="{{ url('/kos/1') }}"><span><i
+                                        class="fa-solid fa-eye"></i></span> Lihat detail</a>
+                            <a class="btn" href="{{ url('/kos/1') }}#lokasi"><span><i
+                                        class="fa-solid fa-location-dot"></i></span> Lokasi</a>
                         </div>
                     </div>
                 </article>
@@ -145,8 +151,10 @@
                         </div>
 
                         <div class="kos-actions">
-                            <a class="btn btn-primary" href="{{ url('/kos/2') }}">Lihat detail</a>
-                            <a class="btn" href="{{ url('/kos/2') }}#lokasi">Lokasi</a>
+                            <a class="btn btn-primary" href="{{ url('/kos/2') }}"><span><i
+                                        class="fa-solid fa-eye"></i></span> Lihat detail</a>
+                            <a class="btn" href="{{ url('/kos/2') }}#lokasi"><span><i
+                                        class="fa-solid fa-location-dot"></i></span> Lokasi</a>
                         </div>
                     </div>
                 </article>
@@ -172,21 +180,28 @@
                         </div>
 
                         <div class="kos-actions">
-                            <a class="btn btn-primary" href="{{ url('/kos/3') }}">Lihat detail</a>
-                            <a class="btn" href="{{ url('/kos/3') }}#lokasi">Lokasi</a>
+                            <a class="btn btn-primary" href="{{ url('/kos/3') }}"><span><i
+                                        class="fa-solid fa-eye"></i></span> Lihat detail</a>
+                            <a class="btn" href="{{ url('/kos/3') }}#lokasi"><span><i
+                                        class="fa-solid fa-location-dot"></i></span> Lokasi</a>
                         </div>
                     </div>
                 </article>
             </div>
 
-            <div class="cta" id="cara">
+            <div class="cta" id="mulai">
                 <div>
                     <h3>Butuh kos cepat? Tinggal 3 langkah.</h3>
                     <p>Search → bandingin fasilitas → chat pemilik / booking (sesuai fitur yang kamu bikin).</p>
                 </div>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <a class="btn" href="{{ url('/kos') }}">Mulai cari kos</a>
-                    <a class="btn btn-primary" href="{{ route('register') }}">Daftar gratis</a>
+                    <a class="btn" href="{{ url('/kos') }}">
+                        <span><i class="fa-solid fa-magnifying-glass"></i></span> Mulai cari kos
+                    </a>
+
+                    <a class="btn btn-primary" href="{{ route('mahasiswa.register') }}">
+                        <span><i class="fa-solid fa-user-plus"></i></span> Daftar gratis
+                    </a>
                 </div>
             </div>
         </div>
@@ -217,6 +232,68 @@
                     <p>UI clean, elegan, dan ringan. Dari HP sampai laptop tetap nyaman.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="section" id="cara">
+        <div class="container">
+
+            <div class="section-title">
+                <div>
+                    <h2>Cara Kerja RoomKos</h2>
+                    <p>Temukan kos impianmu hanya dalam beberapa langkah mudah.</p>
+                </div>
+            </div>
+
+            <div class="accordion">
+
+                <div class="accordion-item">
+                    <button class="accordion-header" type="button" aria-expanded="false">
+                        <span>
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Cari kos sesuai kebutuhan
+                        </span>
+                        <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                    </button>
+
+                    <div class="accordion-content">
+                        Gunakan fitur pencarian untuk menemukan kos berdasarkan kota,
+                        harga, dan fasilitas yang kamu inginkan.
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" type="button" aria-expanded="false">
+                        <span>
+                            <i class="fa-solid fa-eye"></i>
+                            Lihat detail kos
+                        </span>
+                        <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                    </button>
+
+                    <div class="accordion-content">
+                        Lihat foto kamar, fasilitas, lokasi, serta informasi penting
+                        lainnya sebelum kamu memutuskan.
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" type="button" aria-expanded="false">
+                        <span>
+                            <i class="fa-solid fa-comment"></i>
+                            Hubungi pemilik kos
+                        </span>
+                        <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                    </button>
+
+                    <div class="accordion-content">
+                        Jika cocok, kamu bisa langsung menghubungi pemilik kos
+                        untuk menanyakan ketersediaan atau melakukan booking.
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </section>
 @endsection
@@ -367,126 +444,213 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* accordion container */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* item */
+        .accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        /* header */
+        .accordion-header {
+            width: 100%;
+            padding: 16px 18px;
+            background: #fff;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .accordion-header span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* hover */
+        .accordion-header:hover {
+            background: #f8fafc;
+        }
+
+        /* content */
+        .accordion-content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all .3s ease;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* active state */
+        .accordion-item.active .accordion-content {
+            padding: 14px 18px;
+            max-height: 200px;
+        }
+
+        .accordion-icon {
+            transition: transform .3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
     </style>
 @endpush
-@push('script')
+@push('scripts')
     <script>
-        // Reveal on scroll (fade in)
-        const revealCards = () => {
-            const cards = document.querySelectorAll('.kos-card.reveal');
-            if (!('IntersectionObserver' in window)) {
-                cards.forEach(c => c.classList.add('is-in'));
-                return;
-            }
-            const io = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        e.target.classList.add('is-in');
-                        io.unobserve(e.target);
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* =========================
+               Reveal on scroll
+            ========================= */
+            const revealCards = () => {
+                const cards = document.querySelectorAll('.kos-card.reveal');
+                if (!('IntersectionObserver' in window)) {
+                    cards.forEach(c => c.classList.add('is-in'));
+                    return;
+                }
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-in');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.15
+                });
+                cards.forEach(card => io.observe(card));
+            };
+
+            /* =========================
+               Card carousel
+            ========================= */
+            const initCardCarousel = (card) => {
+                const imgEl = card.querySelector('.kos-img');
+                const prevBtn = card.querySelector('.prev');
+                const nextBtn = card.querySelector('.next');
+                const dotsWrap = card.querySelector('.dots');
+                const media = card.querySelector('.kos-media');
+                if (!imgEl || !media) return;
+
+                const images = (card.dataset.images || '')
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean);
+
+                if (!images.length) return;
+
+                let idx = 0;
+                let timer = null;
+
+                const renderDots = () => {
+                    if (!dotsWrap) return;
+                    dotsWrap.innerHTML = '';
+                    images.forEach((_, i) => {
+                        const b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = i === idx ? 'active' : '';
+                        b.addEventListener('click', () => show(i, true));
+                        dotsWrap.appendChild(b);
+                    });
+                };
+
+                const show = (i, userAction = false) => {
+                    idx = (i + images.length) % images.length;
+                    imgEl.classList.remove('is-ready');
+
+                    const tmp = new Image();
+                    tmp.onload = () => {
+                        imgEl.src = images[idx];
+                        imgEl.classList.add('is-ready');
+                        renderDots();
+                    };
+                    tmp.src = images[idx];
+
+                    if (userAction && timer) {
+                        clearInterval(timer);
+                        timer = null;
+                    }
+                };
+
+                prevBtn && prevBtn.addEventListener('click', () => show(idx - 1, true));
+                nextBtn && nextBtn.addEventListener('click', () => show(idx + 1, true));
+
+                let startX = 0;
+                media.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                }, {
+                    passive: true
+                });
+
+                media.addEventListener('touchend', (e) => {
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = endX - startX;
+                    if (Math.abs(diff) > 40) {
+                        diff < 0 ? show(idx + 1, true) : show(idx - 1, true);
+                    }
+                }, {
+                    passive: true
+                });
+
+                show(0);
+
+                if (images.length > 1) {
+                    timer = setInterval(() => show(idx + 1), 4500);
+                    card.addEventListener('mouseenter', () => timer && clearInterval(timer));
+                    card.addEventListener('mouseleave', () => {
+                        timer = setInterval(() => show(idx + 1), 4500);
+                    });
+                } else {
+                    prevBtn && (prevBtn.style.display = 'none');
+                    nextBtn && (nextBtn.style.display = 'none');
+                    dotsWrap && (dotsWrap.style.display = 'none');
+                }
+            };
+
+            document.querySelectorAll('.kos-card').forEach(card => card.classList.add('reveal'));
+            revealCards();
+            document.querySelectorAll('.kos-card').forEach(initCardCarousel);
+
+            /* =========================
+               Accordion (FINAL)
+            ========================= */
+            document.querySelectorAll('.accordion-header').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.accordion-item');
+                    if (!item) return;
+
+                    const isOpen = item.classList.contains('active');
+
+                    // close all
+                    document.querySelectorAll('.accordion-item').forEach((el) => {
+                        el.classList.remove('active');
+                        const h = el.querySelector('.accordion-header');
+                        if (h) h.setAttribute('aria-expanded', 'false');
+                    });
+
+                    // open clicked if previously closed
+                    if (!isOpen) {
+                        item.classList.add('active');
+                        btn.setAttribute('aria-expanded', 'true');
                     }
                 });
-            }, {
-                threshold: 0.15
-            });
-            cards.forEach(c => io.observe(c));
-        };
-
-        // Simple carousel per-card
-        const initCardCarousel = (card) => {
-            const imgEl = card.querySelector('.kos-img');
-            const prevBtn = card.querySelector('.prev');
-            const nextBtn = card.querySelector('.next');
-            const dotsWrap = card.querySelector('.dots');
-
-            const images = (card.dataset.images || '')
-                .split(',')
-                .map(s => s.trim())
-                .filter(Boolean);
-
-            if (!images.length) return;
-
-            let idx = 0;
-
-            const renderDots = () => {
-                dotsWrap.innerHTML = '';
-                images.forEach((_, i) => {
-                    const b = document.createElement('button');
-                    b.type = 'button';
-                    b.className = i === idx ? 'active' : '';
-                    b.addEventListener('click', () => show(i, true));
-                    dotsWrap.appendChild(b);
-                });
-            };
-
-            const show = (i, userAction = false) => {
-                idx = (i + images.length) % images.length;
-
-                imgEl.classList.remove('is-ready');
-                // preload image to avoid flicker
-                const tmp = new Image();
-                tmp.onload = () => {
-                    imgEl.src = images[idx];
-                    imgEl.classList.add('is-ready');
-                    renderDots();
-                };
-                tmp.src = images[idx];
-
-                // stop autoplay if user interacts
-                if (userAction && card._timer) {
-                    clearInterval(card._timer);
-                    card._timer = null;
-                }
-            };
-
-            prevBtn.addEventListener('click', () => show(idx - 1, true));
-            nextBtn.addEventListener('click', () => show(idx + 1, true));
-
-            // swipe support (mobile)
-            let startX = 0;
-            card.querySelector('.kos-media').addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-            }, {
-                passive: true
             });
 
-            card.querySelector('.kos-media').addEventListener('touchend', (e) => {
-                const endX = e.changedTouches[0].clientX;
-                const diff = endX - startX;
-                if (Math.abs(diff) > 40) {
-                    if (diff < script 0) show(idx + 1, true);
-                    else show(idx - 1, true);
-                }
-            }, {
-                passive: true
-            });
-
-            // initial
-            show(0);
-
-            // autoplay (optional) - disable on interaction
-            if (images.length > 1) {
-                card._timer = setInterval(() => show(idx + 1), 4500);
-                // pause on hover
-                card.addEventListener('mouseenter', () => card._timer && clearInterval(card._timer));
-                card.addEventListener('mouseleave', () => {
-                    if (!card._timer) return;
-                    card._timer = setInterval(() => show(idx + 1), 4500);
-                });
-            } else {
-                // hide controls if only 1 image
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                dotsWrap.style.display = 'none';
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // mark cards for reveal
-            document.querySelectorAll('.kos-card').forEach(c => c.classList.add('reveal'));
-            revealCards();
-
-            // init carousels
-            document.querySelectorAll('.kos-card').forEach(initCardCarousel);
-        }); <
-        />
-    @endpush
+        });
+    </script>
+@endpush

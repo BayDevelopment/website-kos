@@ -13,8 +13,13 @@
                </nav>
 
                <div class="nav-actions">
-                   <a class="btn btn-ghost" href="{{ route('login') }}">Masuk</a>
-                   <a class="btn btn-primary" href="{{ route('register') }}">Daftar</a>
+                   <a class="btn btn-ghost" href="{{ route('mahasiswa.login') }}">
+                       <span><i class="fa-solid fa-right-to-bracket"></i></span> Masuk
+                   </a>
+
+                   <a class="btn btn-primary" href="{{ route('mahasiswa.register') }}">
+                       <span><i class="fa-solid fa-user-plus"></i></span> Daftar
+                   </a>
                </div>
 
                {{-- Mobile toggle --}}
@@ -36,8 +41,8 @@
                    <a href="#cara" onclick="document.getElementById('navToggle').checked=false">Cara Kerja</a>
                </div>
                <div class="mobile-actions">
-                   <a class="btn btn-ghost" href="{{ route('login') }}">Masuk</a>
-                   <a class="btn btn-primary" href="{{ route('register') }}">Daftar</a>
+                   <a class="btn btn-ghost" href="{{ route('mahasiswa.login') }}">Masuk</a>
+                   <a class="btn btn-primary" href="{{ route('mahasiswa.register') }}">Daftar</a>
                </div>
            </div>
        </div>
