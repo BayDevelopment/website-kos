@@ -1,44 +1,162 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardMahasiswaController;
-use App\Http\Controllers\GuestHomeController;
+use App\Http\Controllers\DashboardPemilikController;
+use App\Http\Controllers\IdentitasMahasiswaController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\PemilikProfileController;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Redirect Login Default Laravel
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/login', function () {
     return redirect()->route('mahasiswa.login');
 })->name('login');
 
-Route::middleware(['guest']) // nanti bisa kamu ganti jadi 'guest:web' atau custom
-    ->group(function () {
 
-        // Guest pages
-        Route::get('/', [GuestHomeController::class, 'index'])->name('home');
+/*
+|--------------------------------------------------------------------------
+| Public / Home
+|--------------------------------------------------------------------------
+*/
 
-        // Auth mahasiswa (masih guest karena belum login)
-        Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-            Route::get('/login', [AuthController::class, 'index'])->name('login');
-            Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
+Route::get('/', function () {
+    $user = Auth::user();
 
-            Route::get('/register', [AuthController::class, 'register'])->name('register');
-            Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
-        });
+    if ($user) {
+        if ($user->role === 'mahasiswa') {
+            $identitas = $user->identitasMahasiswa;
 
-        // Legal
-        Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
-        Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
+            if (!$identitas || !$identitas->is_complete) {
+                return redirect()->route('mahasiswa.profile.identitas.edit');
+            }
+
+            return redirect()->route('mahasiswa.dashboard');
+        }
+
+        if ($user->role === 'pemilik_toko') {
+            return redirect()->route('pemilik.dashboard');
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+    }
+
+    return view('welcome');
+})->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| Guest Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('guest')->group(function () {
+
+    // Legal Pages
+    Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
+    Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
+
+    // Auth Mahasiswa / Pemilik (shared login page)
+    Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+        Route::get('/login', [AuthController::class, 'index'])->name('login');
+        Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
+
+        Route::get('/register', [AuthController::class, 'register'])->name('register');
+        Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
     });
+});
 
 
-Route::middleware(['auth'])
+/*
+|--------------------------------------------------------------------------
+| Authenticated Mahasiswa
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'verified', 'role:mahasiswa', 'identitas.mahasiswa'])
     ->prefix('mahasiswa')
     ->name('mahasiswa.')
     ->group(function () {
 
         Route::get('/dashboard', [DashboardMahasiswaController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/profile/identitas', [IdentitasMahasiswaController::class, 'edit'])
+            ->name('profile.identitas.edit');
+
+        Route::post('/profile/identitas', [IdentitasMahasiswaController::class, 'update'])
+            ->name('profile.identitas.update');
+
+        Route::get('/profile/akun', [AccountController::class, 'edit'])
+            ->name('profile.akun.edit');
+
+        Route::post('/profile/akun', [AccountController::class, 'update'])
+            ->name('profile.akun.update');
     });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Pemilik
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'verified', 'role:pemilik_toko'])
+    ->prefix('pemilik')
+    ->name('pemilik.')
+    ->group(function () {
+
+        Route::get('/dashboard', [DashboardPemilikController::class, 'index'])
+            ->name('dashboard');
+
+        Route::get('/profile', [PemilikProfileController::class, 'edit'])
+            ->name('profile.edit');
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| Email Verification Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = User::findOrFail($id);
+
+    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        abort(403, 'Link verifikasi tidak valid.');
+    }
+
+    if (! $request->hasValidSignature()) {
+        abort(403, 'Link verifikasi sudah tidak valid atau kadaluarsa.');
+    }
+
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect()->route('mahasiswa.login')
+        ->with('success', 'Email berhasil diverifikasi. Silakan login.');
+})->middleware('signed')->name('verification.verify');
+
+
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');

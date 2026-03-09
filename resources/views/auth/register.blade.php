@@ -22,15 +22,15 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('mahasiswa.register') }}" class="auth-form">
+                    <form method="POST" action="{{ route('mahasiswa.register.process') }}" class="auth-form">
                         @csrf
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Nama lengkap</label>
+                                <label>Username</label>
                                 <div class="input-group">
                                     <i class="fa-solid fa-user"></i>
-                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama kamu"
+                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Username"
                                         required>
                                 </div>
                             </div>
@@ -63,7 +63,7 @@
                         </div>
 
                         <label class="check">
-                            <input type="checkbox" required>
+                            <input type="checkbox" name="policy_accepted_at" required>
                             <span>
                                 Saya setuju dengan <a href="{{ route('terms') }}" class="link">Syarat & Ketentuan</a> dan
                                 <a href="{{ route('privacy') }}" class="link">Kebijakan Privasi</a>.

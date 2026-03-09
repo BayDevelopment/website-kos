@@ -14,7 +14,7 @@
                         <p>Cari kos terbaik di Cilegon & Serang</p>
                     </div>
 
-                    <form method="POST" action="{{ route('mahasiswa.login') }}" class="auth-form">
+                    <form method="POST" action="{{ route('mahasiswa.login.process') }}" class="auth-form">
                         @csrf
 
                         <div class="form-group">

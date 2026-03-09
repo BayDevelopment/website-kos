@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+
+            $table->string('name')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+
             $table->string('password');
+
             $table->enum('role', ['mahasiswa', 'pemilik_kos', 'admin'])
                 ->default('mahasiswa');
+
+            // persetujuan syarat & privasi
+            $table->timestamp('policy_accepted_at')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

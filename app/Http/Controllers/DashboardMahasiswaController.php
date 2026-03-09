@@ -9,7 +9,8 @@ class DashboardMahasiswaController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Dashboard | RoomKos Daerah Cilegon Serang'
+            'title' => 'Dashboard | RoomKos Daerah Cilegon Serang',
+            'navlink' => 'Dashboard'
         ];
         return view('mahasiswa.dashboard', $data);
     }
