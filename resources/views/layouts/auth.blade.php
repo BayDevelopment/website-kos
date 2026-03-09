@@ -14,12 +14,14 @@
     @stack('styles')
 </head>
 
-<body class="auth-body">
+<body class="auth-body" @if (session('success')) data-toast-success="{{ session('success') }}" @endif>
 
     <main class="auth-main">
         @yield('content')
     </main>
 
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="{{ asset('js/sweetalert.js') }}"></script>
 </body>
 
 </html>
