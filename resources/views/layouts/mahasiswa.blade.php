@@ -16,7 +16,7 @@
     @stack('styles')
 </head>
 
-<body @if (session('success')) data-toast-success="{{ session('success') }}" @endif>
+<body class="role-mahasiswa" @if (session('success')) data-toast-success="{{ session('success') }}" @endif>
     @include('partials.mahasiswa.sidebar')
 
     <div class="mhs-main" id="mhsMain">

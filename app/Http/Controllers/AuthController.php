@@ -23,11 +23,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function registerPemilik()
+    {
+        return view('auth.pemilik-register', [
+            'title' => 'Register | RoomKos - Daerah Cilegon & Serang',
+        ]);
+    }
+
     protected function redirectByRole($user)
     {
         return match ($user->role) {
             'mahasiswa' => route('mahasiswa.dashboard'),
-            'pemilik_toko' => route('pemilik.dashboard'),
+            'pemilik_kos' => route('pemilik.dashboard'),
             'admin' => route('admin.dashboard'),
             default => route('home'),
         };
@@ -48,7 +55,7 @@ class AuthController extends Controller
             ])->withInput();
         }
 
-        if (!in_array($user->role, ['mahasiswa', 'pemilik_toko'])) {
+        if (!in_array($user->role, ['mahasiswa', 'pemilik_kos'])) {
             return back()->withErrors([
                 'email' => 'Akun ini tidak diizinkan login dari halaman ini.'
             ])->withInput();
@@ -66,7 +73,6 @@ class AuthController extends Controller
             ])->withInput();
         }
 
-        // remember_token aktif disini
         $remember = $request->boolean('remember');
 
         Auth::login($user, $remember);
@@ -74,7 +80,6 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         if ($user->role === 'mahasiswa') {
-
             $identitas = $user->identitasMahasiswa;
 
             if (!$identitas || !$identitas->is_complete) {
@@ -84,7 +89,20 @@ class AuthController extends Controller
             return redirect()->route('mahasiswa.dashboard');
         }
 
-        if ($user->role === 'pemilik_toko') {
+        if ($user->role === 'pemilik_kos') {
+            $identitas = $user->identitasPemilik;
+
+            // belum isi identitas sama sekali
+            if (!$identitas || !$identitas->is_complete) {
+                return redirect()->route('pemilik.identitas.create');
+            }
+
+            // sudah isi identitas tapi belum approved
+            if ($identitas->verification_status !== 'approved') {
+                return redirect()->route('pemilik.identitas.show');
+            }
+
+            // kalau sudah approved baru boleh ke dashboard
             return redirect()->route('pemilik.dashboard');
         }
 
@@ -154,6 +172,67 @@ class AuthController extends Controller
         return redirect()
             ->route('mahasiswa.login')
             ->with('success', 'Link verifikasi telah dikirim ke email Anda. Silakan cek email untuk mengaktifkan akun.');
+    }
+
+    public function registerProcessPemilik(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+                'regex:/^[a-z0-9_]+$/',
+                'unique:users,name',
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
+            'policy_accepted_at' => [
+                'accepted',
+            ],
+        ], [
+            'name.required' => 'Username wajib diisi.',
+            'name.min' => 'Username minimal 3 karakter.',
+            'name.max' => 'Username maksimal 30 karakter.',
+            'name.regex' => 'Username hanya boleh huruf kecil, angka, dan underscore (_).',
+            'name.unique' => 'Username sudah digunakan.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah terdaftar.',
+
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+
+            'policy_accepted_at.accepted' => 'Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi.',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'pemilik_kos',
+            'policy_accepted_at' => now(),
+        ]);
+
+        $user->sendEmailVerificationNotification();
+
+        return redirect()
+            ->route('pemilik.login')
+            ->with('success', 'Link verifikasi telah dikirim ke email Anda. Silakan cek email untuk mengaktifkan akun pemilik kos.');
     }
 
     public function logout(Request $request)

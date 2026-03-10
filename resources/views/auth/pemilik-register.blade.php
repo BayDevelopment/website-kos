@@ -8,8 +8,8 @@
 
                     <div class="auth-header">
                         <img src="{{ asset('image/logo-nav.png') }}" class="auth-logo" alt="RoomKos">
-                        <h2>Daftar Akun Mahasiswa</h2>
-                        <p>Bikin akun dulu biar bisa simpan favorit dan hubungi pemilik kos.</p>
+                        <h2>Daftar Akun Pemilik Kos</h2>
+                        <p>Mulai kelola kos Anda, tambah kamar, dan terima booking dari mahasiswa.</p>
                     </div>
 
                     @if ($errors->any())
@@ -22,7 +22,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('mahasiswa.register.process') }}" class="auth-form">
+                    <form method="POST" action="{{ route('pemilik.register.process') }}" class="auth-form">
                         @csrf
 
                         <div class="form-grid">
@@ -72,14 +72,14 @@
 
                         <button class="btn btn-primary auth-btn" type="submit">
                             <i class="fa-solid fa-user-plus"></i>
-                            Daftar
+                            Daftar Pemilik Kos
                         </button>
                     </form>
 
                     <div class="auth-footer">
                         Sudah punya akun?
-                        <a href="{{ route('mahasiswa.login') }}">Masuk</a> or
-                        <a href="{{ route('pemilik.register') }}">Daftar sebagai Pemilik Kos</a>
+                        <a href="{{ route('pemilik.login') }}">Masuk</a> atau
+                        <a href="{{ route('mahasiswa.register') }}">Daftar sebagai Mahasiswa</a>
                     </div>
 
                 </div>

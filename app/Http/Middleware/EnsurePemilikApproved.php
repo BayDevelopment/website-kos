@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectIfUserAlreadyLoggedIn
+class EnsurePemilikApproved
 {
     /**
      * Handle an incoming request.
@@ -18,18 +18,15 @@ class RedirectIfUserAlreadyLoggedIn
     {
         $user = Auth::user();
 
-        if ($user) {
-            if ($user->role === 'mahasiswa') {
-                return redirect()->route('mahasiswa.dashboard');
-            }
+        if (!$user || $user->role !== 'pemilik_kos') {
+            abort(403, 'Akses ditolak.');
+        }
 
-            if ($user->role === 'pemilik_kos') {
-                return redirect()->route('pemilik.dashboard');
-            }
+        $identitas = $user->identitasPemilik;
 
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
+        if (!$identitas || $identitas->verification_status !== 'approved') {
+            return redirect()->route('pemilik.identitas.show')
+                ->with('error', 'Akun Anda belum disetujui admin. Anda belum dapat mengakses fitur ini.');
         }
 
         return $next($request);

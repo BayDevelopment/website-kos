@@ -26,9 +26,9 @@ body {
     color: var(--text);
     min-height: 100vh;
 }
-body.role-mahasiswa {
-    --primary: #2563eb;
-    --primary-soft: #eff6ff;
+body.role-pemilik {
+    --primary: #0f766e;
+    --primary-soft: #ecfeff;
 }
 
 /* SIDEBAR */

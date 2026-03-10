@@ -6,7 +6,7 @@ use App\Http\Controllers\DashboardMahasiswaController;
 use App\Http\Controllers\DashboardPemilikController;
 use App\Http\Controllers\IdentitasMahasiswaController;
 use App\Http\Controllers\LegalController;
-use App\Http\Controllers\PemilikProfileController;
+use App\Http\Controllers\PemilikIdentitasController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +36,7 @@ Route::get('/', function () {
         if ($user->role === 'mahasiswa') {
             $identitas = $user->identitasMahasiswa;
 
-            if (!$identitas) {
+            if (!$identitas || !$identitas->is_complete) {
                 return redirect()->route('mahasiswa.profile.identitas.edit');
             }
 
@@ -47,7 +47,17 @@ Route::get('/', function () {
             return redirect()->route('mahasiswa.dashboard');
         }
 
-        if ($user->role === 'pemilik_toko') {
+        if ($user->role === 'pemilik_kos') {
+            $identitas = $user->identitasPemilik;
+
+            if (!$identitas || !$identitas->is_complete) {
+                return redirect()->route('pemilik.identitas.create');
+            }
+
+            if ($identitas->verification_status !== 'approved') {
+                return redirect()->route('pemilik.identitas.show');
+            }
+
             return redirect()->route('pemilik.dashboard');
         }
 
@@ -78,6 +88,14 @@ Route::middleware('guest')->group(function () {
         Route::get('/register', [AuthController::class, 'register'])->name('register');
         Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
     });
+
+    Route::prefix('pemilik')->name('pemilik.')->group(function () {
+        Route::get('/login', [AuthController::class, 'index'])->name('login');
+        Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
+
+        Route::get('/register', [AuthController::class, 'registerPemilik'])->name('register');
+        Route::post('/register', [AuthController::class, 'registerProcessPemilik'])->name('register.process');
+    });
 });
 
 
@@ -101,7 +119,6 @@ Route::middleware(['auth', 'verified', 'role:mahasiswa', 'identitas.mahasiswa'])
         Route::get('/profile/identitas/detail', [IdentitasMahasiswaController::class, 'show'])
             ->name('profile.identitas.show');
     });
-
 
 
 /*
@@ -133,20 +150,53 @@ Route::middleware([
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Pemilik
+| Authenticated Pemilik - identitas flow
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'verified', 'role:pemilik_toko'])
+Route::middleware(['auth', 'verified', 'role:pemilik_kos', 'pemilik.verification'])
     ->prefix('pemilik')
+    ->name('pemilik.')
+    ->group(function () {
+
+        Route::get('/profile/identitas', [PemilikIdentitasController::class, 'create'])
+            ->name('profile.identitas.create');
+
+        Route::post('/profile/identitas', [PemilikIdentitasController::class, 'store'])
+            ->name('profile.identitas.store');
+
+        Route::get('/profile/identitas/detail', [PemilikIdentitasController::class, 'show'])
+            ->name('identitas.show');
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Pemilik - approved only
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware([
+    'auth',
+    'verified',
+    'role:pemilik_kos',
+    'pemilik.verification',
+    'pemilik.approved'
+])->prefix('pemilik')
     ->name('pemilik.')
     ->group(function () {
 
         Route::get('/dashboard', [DashboardPemilikController::class, 'index'])
             ->name('dashboard');
 
-        Route::get('/profile', [PemilikProfileController::class, 'edit'])
-            ->name('profile.edit');
+        Route::get('/kelola-kos', [DashboardPemilikController::class, 'index'])
+            ->name('kos.index');
+
+        Route::get('/pembayaran/detail', [DashboardPemilikController::class, 'index'])
+            ->name('pembayaran.index');
+
+        Route::get('/booking/cek', [DashboardPemilikController::class, 'index'])
+            ->name('booking.index');
     });
 
 
@@ -159,16 +209,21 @@ Route::middleware(['auth', 'verified', 'role:pemilik_toko'])
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     $user = User::findOrFail($id);
 
-    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
         abort(403, 'Link verifikasi tidak valid.');
     }
 
-    if (! $request->hasValidSignature()) {
+    if (!$request->hasValidSignature()) {
         abort(403, 'Link verifikasi sudah tidak valid atau kadaluarsa.');
     }
 
-    if (! $user->hasVerifiedEmail()) {
+    if (!$user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
+    }
+
+    if ($user->role === 'pemilik_kos') {
+        return redirect()->route('pemilik.login')
+            ->with('success', 'Email berhasil diverifikasi. Silakan login.');
     }
 
     return redirect()->route('mahasiswa.login')

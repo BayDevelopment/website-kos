@@ -30,7 +30,7 @@
 
             <div class="user-info">
                 <strong>{{ $identitas?->nama_lengkap ?? (auth()->user()->name ?? 'Mahasiswa') }}</strong>
-                <small>Mahasiswa</small>
+                <small style="text-transform: capitalize">{{ auth()->user()->role ?? 'Mahasiswa' }}</small>
             </div>
         </div>
     </div>

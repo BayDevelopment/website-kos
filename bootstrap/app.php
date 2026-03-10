@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\CheckPemilikVerification;
 use App\Http\Middleware\EnsureIdentitasApproved;
 use App\Http\Middleware\EnsureMahasiswaIdentitasComplete;
+use App\Http\Middleware\EnsurePemilikApproved;
 use App\Http\Middleware\RedirectIfUserAlreadyLoggedIn;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
@@ -18,8 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'identitas.mahasiswa' => EnsureMahasiswaIdentitasComplete::class,
+            'pemilik.verification' => CheckPemilikVerification::class,
             'redirect.loggedin' => RedirectIfUserAlreadyLoggedIn::class,
             'identitas.approved' => EnsureIdentitasApproved::class,
+            'pemilik.approved' => EnsurePemilikApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
