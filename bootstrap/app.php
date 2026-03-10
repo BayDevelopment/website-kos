@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureIdentitasApproved;
 use App\Http\Middleware\EnsureMahasiswaIdentitasComplete;
 use App\Http\Middleware\RedirectIfUserAlreadyLoggedIn;
 use App\Http\Middleware\RoleMiddleware;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'identitas.mahasiswa' => EnsureMahasiswaIdentitasComplete::class,
             'redirect.loggedin' => RedirectIfUserAlreadyLoggedIn::class,
+            'identitas.approved' => EnsureIdentitasApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

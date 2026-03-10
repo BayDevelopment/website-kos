@@ -44,32 +44,37 @@ class AuthController extends Controller
 
         if (!$user) {
             return back()->withErrors([
-                'email' => 'Email tidak ditemukan.',
+                'email' => 'Email tidak ditemukan.'
             ])->withInput();
         }
 
         if (!in_array($user->role, ['mahasiswa', 'pemilik_toko'])) {
             return back()->withErrors([
-                'email' => 'Akun ini tidak diizinkan login dari halaman ini.',
+                'email' => 'Akun ini tidak diizinkan login dari halaman ini.'
             ])->withInput();
         }
 
         if (!$user->hasVerifiedEmail()) {
             return back()->withErrors([
-                'email' => 'Email Anda belum diverifikasi.',
+                'email' => 'Email Anda belum diverifikasi.'
             ])->withInput();
         }
 
         if (!Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors([
-                'password' => 'Password salah.',
+                'password' => 'Password salah.'
             ])->withInput();
         }
 
-        Auth::login($user);
+        // remember_token aktif disini
+        $remember = $request->boolean('remember');
+
+        Auth::login($user, $remember);
+
         $request->session()->regenerate();
 
         if ($user->role === 'mahasiswa') {
+
             $identitas = $user->identitasMahasiswa;
 
             if (!$identitas || !$identitas->is_complete) {
@@ -86,7 +91,7 @@ class AuthController extends Controller
         Auth::logout();
 
         return redirect()->route('login')->withErrors([
-            'email' => 'Role akun tidak dikenali.',
+            'email' => 'Role akun tidak dikenali.'
         ]);
     }
 

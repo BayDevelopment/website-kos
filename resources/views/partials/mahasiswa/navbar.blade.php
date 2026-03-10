@@ -21,17 +21,15 @@
             <i class="fa-regular fa-bell"></i>
         </a>
 
+        @php
+            $identitas = auth()->user()->identitasMahasiswa;
+        @endphp
+
         <div class="topbar-user">
-            <img src="{{ auth()->user()->avatar
-                ? asset('storage/' . auth()->user()->avatar)
-                : (auth()->user()->jenis_kelamin === 'laki-laki'
-                    ? asset('image/avatar/man.png')
-                    : (auth()->user()->jenis_kelamin === 'perempuan'
-                        ? asset('image/avatar/woman.png')
-                        : asset('image/avatar/profile.png'))) }}"
-                alt="User Avatar">
+            <img src="{{ $identitas?->avatar_url ?? asset('image/avatar/profile.png') }}" alt="User Avatar">
+
             <div class="user-info">
-                <strong>{{ auth()->user()->name ?? 'Mahasiswa' }}</strong>
+                <strong>{{ $identitas?->nama_lengkap ?? (auth()->user()->name ?? 'Mahasiswa') }}</strong>
                 <small>Mahasiswa</small>
             </div>
         </div>

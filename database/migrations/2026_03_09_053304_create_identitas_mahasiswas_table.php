@@ -20,11 +20,13 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('nama_lengkap');
-            $table->string('asal_universitas');
+            $table->foreignId('universitas_id')
+                ->constrained('universitas')
+                ->restrictOnDelete();
             $table->unsignedTinyInteger('semester');
             $table->string('nik', 20)->unique();
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
-            $table->string('asal_kota');
+            $table->enum('asal_kota', ['Kota Cilegon', 'Kota Serang']);
             $table->text('alamat');
             $table->string('no_wa', 20);
 

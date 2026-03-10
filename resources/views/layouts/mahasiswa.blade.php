@@ -32,6 +32,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="{{ asset('js/navbar-toogle.js') }}"></script>
     <script defer src="{{ asset('js/sweetalert.js') }}"></script>
+    @stack('script')
 </body>
 
 </html>

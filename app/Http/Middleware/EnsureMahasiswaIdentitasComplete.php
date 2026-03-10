@@ -24,8 +24,9 @@ class EnsureMahasiswaIdentitasComplete
 
         $identitas = $user->identitasMahasiswa;
 
+        // Kalau belum ada identitas, hanya boleh ke halaman edit/update
         if (
-            (!$identitas || !$identitas->is_complete) &&
+            !$identitas &&
             ! $request->routeIs(
                 'mahasiswa.profile.identitas.edit',
                 'mahasiswa.profile.identitas.update',
@@ -35,6 +36,19 @@ class EnsureMahasiswaIdentitasComplete
             return redirect()
                 ->route('mahasiswa.profile.identitas.edit')
                 ->with('warning', 'Silakan lengkapi identitas terlebih dahulu.');
+        }
+
+        // Kalau identitas sudah ada, mahasiswa tidak boleh balik ke form edit/update lagi
+        if (
+            $identitas &&
+            $request->routeIs(
+                'mahasiswa.profile.identitas.edit',
+                'mahasiswa.profile.identitas.update'
+            )
+        ) {
+            return redirect()
+                ->route('mahasiswa.profile.identitas.show')
+                ->with('warning', 'Identitas sudah dikirim dan tidak dapat diubah.');
         }
 
         return $next($request);

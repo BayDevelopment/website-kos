@@ -36,7 +36,8 @@
             @endif
 
             <div class="identity-card">
-                <form action="{{ route('mahasiswa.profile.identitas.update') }}" method="POST" class="identity-form">
+                <form action="{{ route('mahasiswa.profile.identitas.update') }}" method="POST" enctype="multipart/form-data"
+                    class="identity-form">
                     @csrf
 
                     <div class="form-section">
@@ -49,14 +50,20 @@
                             <div class="form-group">
                                 <label for="nama_lengkap">Nama Lengkap</label>
                                 <input type="text" id="nama_lengkap" name="nama_lengkap"
-                                    value="{{ old('nama_lengkap', $identitas->nama_lengkap ?? (auth()->user()->name ?? '')) }}"
+                                    value="{{ old('nama_lengkap', $identitas->nama_lengkap ?? '') }}"
                                     placeholder="Masukkan nama lengkap">
+                                @error('nama_lengkap')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="nik">NIK</label>
                                 <input type="text" id="nik" name="nik"
                                     value="{{ old('nik', $identitas->nik ?? '') }}" placeholder="Masukkan NIK">
+                                @error('nik')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
@@ -72,13 +79,66 @@
                                         Perempuan
                                     </option>
                                 </select>
+                                @error('jenis_kelamin')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="asal_kota">Asal Kota</label>
-                                <input type="text" id="asal_kota" name="asal_kota"
-                                    value="{{ old('asal_kota', $identitas->asal_kota ?? '') }}"
-                                    placeholder="Contoh: Cilegon">
+                                <select id="asal_kota" name="asal_kota">
+                                    <option value="">Pilih asal kota</option>
+                                    <option value="Kota Cilegon"
+                                        {{ old('asal_kota', $identitas->asal_kota ?? '') == 'Kota Cilegon' ? 'selected' : '' }}>
+                                        Kota Cilegon
+                                    </option>
+                                    <option value="Kota Serang"
+                                        {{ old('asal_kota', $identitas->asal_kota ?? '') == 'Kota Serang' ? 'selected' : '' }}>
+                                        Kota Serang
+                                    </option>
+                                </select>
+                                @error('asal_kota')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group form-group-full">
+                                <label for="avatar">Foto Profil</label>
+
+                                <input type="file" id="avatar" name="avatar" accept=".jpg,.jpeg"
+                                    class="file-input-hidden">
+
+                                <label for="avatar" class="upload-box">
+                                    <div class="upload-box-left">
+                                        <div class="upload-icon">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        </div>
+                                        <div class="upload-text">
+                                            <strong id="file-name">
+                                                {{ !empty($identitas?->avatar) ? 'Ganti foto profil' : 'Pilih foto profil' }}
+                                            </strong>
+                                            <span>Klik untuk upload foto</span>
+                                        </div>
+                                    </div>
+                                    <div class="upload-action">
+                                        Pilih File
+                                    </div>
+                                </label>
+
+                                <small class="upload-hint">
+                                    Foto harus berformat JPG/JPEG dan maksimal 1 MB.
+                                </small>
+
+                                @error('avatar')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+
+                                @if (!empty($identitas?->avatar))
+                                    <div class="avatar-preview-wrap">
+                                        <img src="{{ asset('storage/' . $identitas->avatar) }}" alt="Avatar"
+                                            class="avatar-preview">
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -91,16 +151,53 @@
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="asal_universitas">Asal Universitas</label>
-                                <input type="text" id="asal_universitas" name="asal_universitas"
-                                    value="{{ old('asal_universitas', $identitas->asal_universitas ?? '') }}"
-                                    placeholder="Masukkan nama universitas">
+                                <label for="universitas_id">Asal Universitas</label>
+
+                                <select id="universitas_id" name="universitas_id"
+                                    {{ $universitas->isEmpty() ? 'disabled' : '' }}>
+
+                                    @if ($universitas->isEmpty())
+                                        <option value="">
+                                            Belum ada data universitas
+                                        </option>
+                                    @else
+                                        <option value="">Pilih universitas</option>
+
+                                        @foreach ($universitas as $u)
+                                            <option value="{{ $u->id }}"
+                                                {{ old('universitas_id', $identitas->universitas_id ?? '') == $u->id ? 'selected' : '' }}>
+                                                {{ $u->nama_universitas }} - {{ $u->kota }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+
+                                </select>
+
+                                @error('universitas_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+
+                                @if ($universitas->isEmpty())
+                                    <small class="text-muted">
+                                        Data universitas belum tersedia. Silakan hubungi admin.
+                                    </small>
+                                @endif
                             </div>
 
                             <div class="form-group">
                                 <label for="semester">Semester</label>
-                                <input type="number" id="semester" name="semester" min="1" max="14"
-                                    value="{{ old('semester', $identitas->semester ?? '') }}" placeholder="Contoh: 4">
+                                <select id="semester" name="semester">
+                                    <option value="">Pilih semester</option>
+                                    @for ($i = 1; $i <= 14; $i++)
+                                        <option value="{{ $i }}"
+                                            {{ old('semester', $identitas->semester ?? '') == $i ? 'selected' : '' }}>
+                                            Semester {{ $i }}
+                                        </option>
+                                    @endfor
+                                </select>
+                                @error('semester')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -116,14 +213,44 @@
                                 <label for="no_wa">Nomor WhatsApp</label>
                                 <input type="text" id="no_wa" name="no_wa"
                                     value="{{ old('no_wa', $identitas->no_wa ?? '') }}" placeholder="08xxxxxxxxxx">
+                                @error('no_wa')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group form-group-full">
                                 <label for="alamat">Alamat Lengkap</label>
                                 <textarea id="alamat" name="alamat" rows="5" placeholder="Masukkan alamat lengkap">{{ old('alamat', $identitas->alamat ?? '') }}</textarea>
+                                @error('alamat')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
                     </div>
+
+                    @if ($identitas)
+                        <div class="form-section">
+                            <div class="section-title">
+                                <h2>Status Verifikasi</h2>
+                                <p>Status ini diisi oleh sistem / admin.</p>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Status Verifikasi</label>
+                                    <input type="text" value="{{ ucfirst($identitas->verification_status) }}"
+                                        disabled>
+                                </div>
+
+                                @if ($identitas->verification_note)
+                                    <div class="form-group form-group-full">
+                                        <label>Catatan Verifikasi</label>
+                                        <textarea rows="4" disabled>{{ $identitas->verification_note }}</textarea>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="identity-note">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -138,14 +265,6 @@
                             <i class="fa-solid fa-floppy-disk"></i>
                             Simpan Identitas
                         </button>
-
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn-logout-identity">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                Logout
-                            </button>
-                        </form>
                     </div>
                 </form>
             </div>
@@ -155,8 +274,8 @@
 @push('styles')
     <style>
         /* =========================
-       IDENTITAS MAHASISWA PAGE
-    ========================= */
+                                                   IDENTITAS MAHASISWA PAGE
+                                                ========================= */
         .identity-page {
             padding: 6px 0 4px;
         }
@@ -437,4 +556,23 @@
             }
         }
     </style>
+@endpush
+
+@push('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarInput = document.getElementById('avatar');
+            const fileName = document.getElementById('file-name');
+
+            if (avatarInput && fileName) {
+                avatarInput.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        fileName.textContent = this.files[0].name;
+                    } else {
+                        fileName.textContent = 'Pilih foto profil';
+                    }
+                });
+            }
+        });
+    </script>
 @endpush

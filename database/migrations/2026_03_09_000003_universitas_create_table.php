@@ -15,12 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('nama_universitas');
             $table->string('slug')->unique();
-            $table->enum('kota', ['Cilegon', 'Serang']);
+            $table->enum('jenis', ['negeri', 'swasta'])->nullable();
+            $table->enum('kota', ['Kota Cilegon', 'Kota Serang']);
             $table->text('alamat')->nullable();
             $table->string('website')->nullable();
             $table->string('logo')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->index('kota');
+            $table->index('jenis');
+            $table->index('is_active');
         });
     }
 

@@ -21,8 +21,12 @@
                             <label>Email</label>
                             <div class="input-group">
                                 <i class="fa-solid fa-envelope"></i>
-                                <input type="email" name="email" placeholder="email@email.com" required>
+                                <input type="email" name="email" placeholder="email@email.com"
+                                    value="{{ old('email') }}" required>
                             </div>
+                            @error('email')
+                                <small class="text-danger" style="color: red">{{ $message }}</small>
+                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -31,6 +35,9 @@
                                 <i class="fa-solid fa-lock"></i>
                                 <input type="password" name="password" placeholder="Masukkan password" required>
                             </div>
+                            @error('password')
+                                <small class="text-danger" style="color: red">{{ $message }}</small>
+                            @enderror
                         </div>
 
                         <div class="auth-options">
@@ -46,7 +53,6 @@
                             <i class="fa-solid fa-right-to-bracket"></i>
                             Masuk
                         </button>
-
                     </form>
 
                     <div class="auth-footer">

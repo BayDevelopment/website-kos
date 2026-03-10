@@ -12,7 +12,7 @@ class IdentitasMahasiswa extends Model
     protected $fillable = [
         'user_id',
         'nama_lengkap',
-        'asal_universitas',
+        'universitas_id',
         'semester',
         'nik',
         'jenis_kelamin',
@@ -35,5 +35,26 @@ class IdentitasMahasiswa extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function universitas()
+    {
+        return $this->belongsTo(Universitas::class);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        if ($this->jenis_kelamin === 'laki-laki') {
+            return asset('image/avatar/man.png');
+        }
+
+        if ($this->jenis_kelamin === 'perempuan') {
+            return asset('image/avatar/woman.png');
+        }
+
+        return asset('image/avatar/profile.png');
     }
 }

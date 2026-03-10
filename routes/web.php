@@ -36,8 +36,12 @@ Route::get('/', function () {
         if ($user->role === 'mahasiswa') {
             $identitas = $user->identitasMahasiswa;
 
-            if (!$identitas || !$identitas->is_complete) {
+            if (!$identitas) {
                 return redirect()->route('mahasiswa.profile.identitas.edit');
+            }
+
+            if ($identitas->verification_status !== 'approved') {
+                return redirect()->route('mahasiswa.profile.identitas.show');
             }
 
             return redirect()->route('mahasiswa.dashboard');
@@ -52,8 +56,9 @@ Route::get('/', function () {
         }
     }
 
-    return view('welcome');
+    return view('guest.homepage');
 })->name('home');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,11 +68,9 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
 
-    // Legal Pages
     Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
     Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
 
-    // Auth Mahasiswa / Pemilik (shared login page)
     Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/login', [AuthController::class, 'index'])->name('login');
         Route::post('/login', [AuthController::class, 'loginProcess'])->name('login.process');
@@ -80,7 +83,7 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Mahasiswa
+| Authenticated Mahasiswa - identitas
 |--------------------------------------------------------------------------
 */
 
@@ -89,14 +92,36 @@ Route::middleware(['auth', 'verified', 'role:mahasiswa', 'identitas.mahasiswa'])
     ->name('mahasiswa.')
     ->group(function () {
 
-        Route::get('/dashboard', [DashboardMahasiswaController::class, 'index'])
-            ->name('dashboard');
-
         Route::get('/profile/identitas', [IdentitasMahasiswaController::class, 'edit'])
             ->name('profile.identitas.edit');
 
         Route::post('/profile/identitas', [IdentitasMahasiswaController::class, 'update'])
             ->name('profile.identitas.update');
+
+        Route::get('/profile/identitas/detail', [IdentitasMahasiswaController::class, 'show'])
+            ->name('profile.identitas.show');
+    });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Mahasiswa - approved only
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware([
+    'auth',
+    'verified',
+    'role:mahasiswa',
+    'identitas.mahasiswa',
+    'identitas.approved'
+])->prefix('mahasiswa')
+    ->name('mahasiswa.')
+    ->group(function () {
+
+        Route::get('/dashboard', [DashboardMahasiswaController::class, 'index'])
+            ->name('dashboard');
 
         Route::get('/profile/akun', [AccountController::class, 'edit'])
             ->name('profile.akun.edit');
