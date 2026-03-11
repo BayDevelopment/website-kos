@@ -23,14 +23,30 @@
 
         @php
             $user = auth()->user();
-            $pemilik = $user->pemilikKos ?? null;
+            $pemilik = $user->identitasPemilik ?? null;
+
+            // Nama
+            $nama = $pemilik?->nama_lengkap ?: $user->name;
+
+            // Avatar
+            if ($pemilik?->avatar) {
+                $avatar = asset('storage/' . $pemilik->avatar);
+            } else {
+                if ($pemilik?->jenis_kelamin === 'laki-laki') {
+                    $avatar = asset('image/avatar/man.png');
+                } elseif ($pemilik?->jenis_kelamin === 'perempuan') {
+                    $avatar = asset('image/avatar/woman.png');
+                } else {
+                    $avatar = asset('image/avatar/profile.png');
+                }
+            }
         @endphp
 
         <div class="topbar-user">
-            <img src="{{ $pemilik?->avatar_url ?? asset('image/avatar/profile.png') }}" alt="User Avatar">
+            <img src="{{ $avatar }}" alt="User Avatar">
 
             <div class="user-info">
-                <strong>{{ $pemilik?->nama_lengkap ?? ($user->name ?? 'Pemilik Kos') }}</strong>
+                <strong>{{ $nama }}</strong>
                 <small>Pemilik Kos</small>
             </div>
         </div>

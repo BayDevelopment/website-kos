@@ -27,7 +27,7 @@ class CheckPemilikVerification
 
         $allowedRoutesWhenNoIdentity = [
             'pemilik.profile.identitas.create',
-            'pemilik.identitas.store',
+            'pemilik.profile.identitas.store',
             'logout',
         ];
 

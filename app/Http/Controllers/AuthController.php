@@ -94,7 +94,7 @@ class AuthController extends Controller
 
             // belum isi identitas sama sekali
             if (!$identitas || !$identitas->is_complete) {
-                return redirect()->route('pemilik.identitas.create');
+                return redirect()->route('pemilik.profile.identitas.create');
             }
 
             // sudah isi identitas tapi belum approved

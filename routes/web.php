@@ -51,7 +51,7 @@ Route::get('/', function () {
             $identitas = $user->identitasPemilik;
 
             if (!$identitas || !$identitas->is_complete) {
-                return redirect()->route('pemilik.identitas.create');
+                return redirect()->route('pemilik.profile.identitas.create');
             }
 
             if ($identitas->verification_status !== 'approved') {

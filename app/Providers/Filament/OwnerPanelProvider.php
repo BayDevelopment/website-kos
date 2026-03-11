@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -17,6 +18,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class OwnerPanelProvider extends PanelProvider
@@ -31,6 +33,7 @@ class OwnerPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->font('poppins')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -54,6 +57,35 @@ class OwnerPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->navigationGroups(
+                [
+                    NavigationGroup::make()
+                        ->label('Manajemen')
+                        ->collapsed(false),
+                ]
+            )
+            ->brandLogo(fn() => new \Illuminate\Support\HtmlString(
+                '<span style="
+                    font-size:20px;
+                    font-family:Poppins,sans-serif;
+                    font-style:italic;
+                ">
+                    <span style="font-weight:300;color:#111;">panel</span>
+                    <span style="font-weight:600;color:#facc15;">RoomKos</span>
+                </span>'
+            ))
+
+            ->darkModeBrandLogo(fn() => new \Illuminate\Support\HtmlString(
+                '<span style="
+                        font-size:20px;
+                        font-family:Poppins,sans-serif;
+                        font-style:italic;
+                        letter-spacing:0.5px;
+                    ">
+                        <span style="font-weight:300;color:#ffffff;">panel</span>
+                        <span style="font-weight:600;color:#facc15;margin-left:4px;">RoomKos</span>
+                    </span>'
+            ));
     }
 }
