@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\IdentitasMahasiswas\Tables;
+namespace App\Filament\Resources\IdentitasPemiliks\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -11,7 +11,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class IdentitasMahasiswasTable
+class IdentitasPemiliksTable
 {
     public static function configure(Table $table): Table
     {
@@ -42,16 +42,24 @@ class IdentitasMahasiswasTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('universitas.nama_universitas')
-                    ->label('Universitas')
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('nama_usaha')
+                    ->label('Nama Usaha')
+                    ->searchable(),
 
-                TextColumn::make('semester')
+                TextColumn::make('status_pengelola')
+                    ->label('Status')
                     ->badge()
-                    ->sortable(),
+                    ->color(fn($state) => match ($state) {
+                        'pemilik' => 'success',
+                        'pengelola' => 'info',
+                        'agen' => 'warning',
+                    }),
+
+                TextColumn::make('no_wa')
+                    ->label('WhatsApp'),
 
                 TextColumn::make('verification_status')
+                    ->label('Verifikasi')
                     ->badge()
                     ->color(fn($state) => match ($state) {
                         'pending' => 'warning',
