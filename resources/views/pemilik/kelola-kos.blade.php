@@ -74,7 +74,7 @@
                         {{-- ACTION --}}
                         <div class="kos-actions">
 
-                            <a href="{{ route('pemilik.kos.edit', $item->id) }}" class="btn-edit text-decoration-none">
+                            <a href="{{ route('pemilik.kos.edit', $item->slug) }}" class="btn-edit text-decoration-none">
                                 Edit
                             </a>
 
@@ -82,13 +82,13 @@
                                 Kamar
                             </a>
 
-                            <form action="{{ route('pemilik.kos.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus kos ini?')">
+                            <form action="{{ route('pemilik.kos.destroy', $item->slug) }}" method="POST"
+                                class="delete-form">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button class="btn-delete">
+                                <button class="btn-delete-kos">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
 
@@ -129,8 +129,8 @@
 @push('styles')
     <style>
         /* =========================
-                                                                               KOS MANAGEMENT
-                                                                            ========================= */
+                                                                                                                   KOS MANAGEMENT
+                                                                                                                ========================= */
 
         .kos-grid {
             display: grid;
@@ -239,8 +239,8 @@
         }
 
         /* =========================
-                                                                           BUTTON EFFECT
-                                                                        ========================= */
+                                                                                                               BUTTON EFFECT
+                                                                                                            ========================= */
 
         .kos-actions a,
         .kos-actions button {
@@ -291,14 +291,14 @@
         }
 
         /* DELETE */
-        .btn-delete {
+        .btn-delete-kos {
             background: #fee2e2;
             color: #dc2626;
             flex: 0;
             padding: 10px 12px;
         }
 
-        .btn-delete:hover {
+        .btn-delete-kos:hover {
             background: #dc2626;
             color: #fff;
         }
@@ -332,8 +332,8 @@
         }
 
         /* =========================
-       FIX LINK DECORATION
-    ========================= */
+                                           FIX LINK DECORATION
+                                        ========================= */
 
         a {
             text-decoration: none;
@@ -353,4 +353,32 @@
             text-decoration: none;
         }
     </style>
+@endpush
+@push('script')
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deleteButtons = document.querySelectorAll(".btn-delete-kos");
+
+            deleteButtons.forEach(btn => {
+                btn.addEventListener("click", function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data ini akan dihapus secara permanent!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Tidak, batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // submit form
+                            this.closest('form').submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 @endpush

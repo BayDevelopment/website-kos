@@ -2,7 +2,6 @@
 
 @section('content_pemilik')
     <div class="p-6">
-
         <div class="content-card">
 
             <div class="card-head">
@@ -13,7 +12,6 @@
             </div>
 
             <form action="{{ route('pemilik.kos.insert') }}" method="POST">
-
                 @csrf
 
                 <div class="form-grid">
@@ -28,6 +26,7 @@
                     <div class="form-group">
                         <label>Slug (URL)</label>
                         <input type="text" id="slug_display" readonly placeholder="Slug otomatis dari nama kos">
+                        <input type="hidden" id="slug" name="slug">
                     </div>
 
                     {{-- TIPE KOS --}}
@@ -57,6 +56,7 @@
                         <input type="number" name="harga_mulai" placeholder="Contoh: 500000">
                     </div>
 
+                    {{-- WILAYAH --}}
                     <div class="form-group required">
                         <label>Provinsi</label>
                         <select id="provinsi" name="provinsi" required>
@@ -91,13 +91,11 @@
                         <input type="text" name="kode_pos" placeholder="Contoh: 42423">
                     </div>
 
-                    {{-- KONTAK NAMA --}}
+                    {{-- KONTAK --}}
                     <div class="form-group">
                         <label>Nama Kontak</label>
                         <input type="text" name="kontak_nama" placeholder="Contoh: Bapak Andi">
                     </div>
-
-                    {{-- KONTAK WA --}}
                     <div class="form-group">
                         <label>No WhatsApp</label>
                         <input type="text" name="kontak_wa" placeholder="Contoh: 081234567890">
@@ -105,14 +103,22 @@
 
                 </div>
 
+                {{-- MAP --}}
                 <div class="form-group full">
                     <label>Lokasi Kos</label>
+                    @error('latitude')
+                        <div class="alert-map-error">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            Silakan klik lokasi kos di peta terlebih dahulu.
+                        </div>
+                    @enderror
                     <div id="map" style="height:350px;border-radius:12px; margin-bottom: 10px;"></div>
+                    <small style="color:#6b7280">Klik peta untuk menentukan lokasi kos.</small>
                 </div>
-
                 <input type="hidden" name="latitude">
                 <input type="hidden" name="longitude">
 
+                {{-- ALAMAT --}}
                 <div class="form-group required full">
                     <label>Alamat Lengkap</label>
                     <textarea name="alamat_lengkap" rows="3" required></textarea>
@@ -125,28 +131,29 @@
                 </div>
 
                 <div class="form-actions">
-
                     <button type="submit" class="btn-submit-kos">
                         <i class="fa-solid fa-floppy-disk"></i>
                         <span>Simpan Kos</span>
                     </button>
-
-                    <a href="{{ route('pemilik.kos.index') }}" class="btn-cancel">
-                        Batal
-                    </a>
-
+                    <a href="{{ route('pemilik.kos.index') }}" class="btn-cancel">Batal</a>
                 </div>
 
             </form>
 
         </div>
-
     </div>
 @endsection
-
-
 @push('styles')
     <style>
+        .alert-map-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
         /* GRID FORM */
 
         .form-grid {
@@ -224,386 +231,160 @@
             .form-grid {
                 grid-template-columns: 1fr;
             }
+        }
 
+        .btn-submit-kos {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .2s;
+            font-family: "Poppins", sans-serif !important;
+        }
+
+        .btn-submit-kos:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .08);
         }
     </style>
 @endpush
 @push('script')
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-
             "use strict";
 
-            /* =========================
-               ELEMENT
-            ========================= */
-
+            // Auto slug
             const namaKos = document.querySelector('[name="nama_kos"]');
             const slugDisplay = document.getElementById("slug_display");
             const slugHidden = document.getElementById("slug");
+            if (namaKos) {
+                const slugify = text => text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
+                    .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "")
+                    .substring(0, 120);
+                namaKos.addEventListener("input", () => {
+                    const slug = slugify(namaKos.value);
+                    slugDisplay.value = slug;
+                    slugHidden.value = slug;
+                });
+            }
 
-            const provinsi = document.getElementById("provinsi");
-            const kota = document.getElementById("kota");
-            const kecamatan = document.getElementById("kecamatan");
-            const kelurahan = document.getElementById("kelurahan");
-
+            // Prevent double submit
             const form = document.querySelector("form");
-
-
-            /* =========================
-               PREVENT DOUBLE SUBMIT
-            ========================= */
-
             if (form) {
-
-                form.addEventListener("submit", function() {
-
+                form.addEventListener("submit", () => {
                     const btn = form.querySelector("button[type=submit]");
-
                     if (btn) {
                         btn.disabled = true;
                         btn.innerText = "Menyimpan...";
                     }
-
                 });
-
             }
 
-
-            /* =========================
-               AUTO SLUG (CLIENT PREVIEW)
-            ========================= */
-
-            if (namaKos && slugDisplay && slugHidden) {
-
-                const slugify = (text) => {
-
-                    return text
-                        .normalize("NFKD")
-                        .replace(/[\u0300-\u036f]/g, "")
-                        .toLowerCase()
-                        .trim()
-                        .replace(/[^a-z0-9\s-]/g, "")
-                        .replace(/\s+/g, "-")
-                        .replace(/-+/g, "-")
-                        .replace(/^-+|-+$/g, "")
-                        .substring(0, 120);
-
-                };
-
-                let typingTimer;
-
-                namaKos.addEventListener("input", function() {
-
-                    clearTimeout(typingTimer);
-
-                    typingTimer = setTimeout(() => {
-
-                        const slug = slugify(this.value);
-
-                        slugDisplay.value = slug || "";
-                        slugHidden.value = slug || "";
-
-                    }, 150);
-
-                });
-
-            }
-
-
-            /* =========================
-               API WILAYAH
-            ========================= */
-
-            if (!provinsi || !kota || !kecamatan || !kelurahan) return;
-
+            // Wilayah
+            const provinsi = document.getElementById("provinsi");
+            const kota = document.getElementById("kota");
+            const kecamatan = document.getElementById("kecamatan");
+            const kelurahan = document.getElementById("kelurahan");
             const API = "https://www.emsifa.com/api-wilayah-indonesia/api";
 
-
-            /* =========================
-               HELPER
-            ========================= */
-
             function resetSelect(el, label) {
-
                 el.innerHTML = `<option value="">${label}</option>`;
-
             }
 
             function loading(el) {
-
                 el.innerHTML = `<option value="">Loading...</option>`;
-
             }
-
-
-            /* =========================
-               LOAD PROVINSI
-            ========================= */
 
             async function loadProvinsi() {
-
                 try {
-
                     const res = await fetch(`${API}/provinces.json`);
-
-                    if (!res.ok) throw new Error("API Error");
-
                     const data = await res.json();
-
                     let html = `<option value="">Pilih Provinsi</option>`;
-
                     data.forEach(p => {
-
-                        if (p.name.toLowerCase() === "banten") {
-
-                            html +=
-                                `<option value="${p.name}" data-id="${p.id}" selected>${p.name}</option>`;
-
-                        }
-
+                        html += `<option value="${p.name}" data-id="${p.id}">${p.name}</option>`;
                     });
-
                     provinsi.innerHTML = html;
-
-                    loadKota();
-
-                } catch (err) {
-
-                    console.error("Gagal load provinsi", err);
-
+                } catch (e) {
+                    console.error(e);
                     resetSelect(provinsi, "Provinsi gagal dimuat");
-
                 }
-
             }
-
-
-            /* =========================
-               LOAD KOTA
-            ========================= */
 
             async function loadKota() {
-
                 const provId = provinsi.options[provinsi.selectedIndex]?.dataset.id;
-
                 if (!provId) return;
-
                 loading(kota);
-
-                try {
-
-                    const res = await fetch(`${API}/regencies/${provId}.json`);
-
-                    if (!res.ok) throw new Error("API Error");
-
-                    const data = await res.json();
-
-                    let html = `<option value="">Pilih Kota</option>`;
-
-                    data.forEach(k => {
-
-                        const name = k.name.toUpperCase();
-
-                        if (name.includes("CILEGON") || name.includes("SERANG")) {
-
-                            html += `<option value="${k.name}" data-id="${k.id}">${k.name}</option>`;
-
-                        }
-
-                    });
-
-                    kota.innerHTML = html;
-
-                } catch (err) {
-
-                    console.error("Gagal load kota", err);
-
-                    resetSelect(kota, "Kota gagal dimuat");
-
-                }
-
-            }
-
-
-            /* =========================
-               LOAD KECAMATAN
-            ========================= */
-
-            async function loadKecamatan() {
-
-                const kotaId = kota.options[kota.selectedIndex]?.dataset.id;
-
-                if (!kotaId) return;
-
-                loading(kecamatan);
-
-                resetSelect(kelurahan, "Pilih Kelurahan");
-
-                try {
-
-                    const res = await fetch(`${API}/districts/${kotaId}.json`);
-
-                    if (!res.ok) throw new Error("API Error");
-
-                    const data = await res.json();
-
-                    let html = `<option value="">Pilih Kecamatan</option>`;
-
-                    data.forEach(kec => {
-
-                        html += `<option value="${kec.name}" data-id="${kec.id}">${kec.name}</option>`;
-
-                    });
-
-                    kecamatan.innerHTML = html;
-
-                } catch (err) {
-
-                    console.error("Gagal load kecamatan", err);
-
-                    resetSelect(kecamatan, "Kecamatan gagal dimuat");
-
-                }
-
-            }
-
-
-            /* =========================
-               LOAD KELURAHAN
-            ========================= */
-
-            async function loadKelurahan() {
-
-                const kecId = kecamatan.options[kecamatan.selectedIndex]?.dataset.id;
-
-                if (!kecId) return;
-
-                loading(kelurahan);
-
-                try {
-
-                    const res = await fetch(`${API}/villages/${kecId}.json`);
-
-                    if (!res.ok) throw new Error("API Error");
-
-                    const data = await res.json();
-
-                    let html = `<option value="">Pilih Kelurahan</option>`;
-
-                    data.forEach(kel => {
-
-                        html += `<option value="${kel.name}">${kel.name}</option>`;
-
-                    });
-
-                    kelurahan.innerHTML = html;
-
-                } catch (err) {
-
-                    console.error("Gagal load kelurahan", err);
-
-                    resetSelect(kelurahan, "Kelurahan gagal dimuat");
-
-                }
-
-            }
-
-
-            /* =========================
-               EVENT
-            ========================= */
-
-            provinsi.addEventListener("change", () => {
-
-                resetSelect(kota, "Pilih Kota");
+                const res = await fetch(`${API}/regencies/${provId}.json`);
+                const data = await res.json();
+                let html = `<option value="">Pilih Kota</option>`;
+                data.forEach(k => html += `<option value="${k.name}" data-id="${k.id}">${k.name}</option>`);
+                kota.innerHTML = html;
                 resetSelect(kecamatan, "Pilih Kecamatan");
                 resetSelect(kelurahan, "Pilih Kelurahan");
-
-                loadKota();
-
-            });
-
-            kota.addEventListener("change", loadKecamatan);
-
-            kecamatan.addEventListener("change", loadKelurahan);
-
-
-            /* =========================
-            MAP PICKER + AUTO ADDRESS
-            ========================= */
-
-            const mapElement = document.getElementById("map");
-
-            if (mapElement) {
-
-                const map = L.map("map").setView([-6.0023, 106.0112], 13);
-
-                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                    maxZoom: 19
-                }).addTo(map);
-
-                let marker = null;
-
-                const latInput = document.querySelector('[name="latitude"]');
-                const lngInput = document.querySelector('[name="longitude"]');
-                const alamatTextarea = document.querySelector('[name="alamat_lengkap"]');
-
-                map.on("click", async function(e) {
-
-                    const lat = e.latlng.lat.toFixed(8);
-                    const lng = e.latlng.lng.toFixed(8);
-
-                    /* marker */
-
-                    if (marker) {
-                        marker.setLatLng(e.latlng);
-                    } else {
-                        marker = L.marker(e.latlng).addTo(map);
-                    }
-
-                    /* isi latitude longitude */
-
-                    if (latInput) latInput.value = lat;
-                    if (lngInput) lngInput.value = lng;
-
-                    /* reverse geocode */
-
-                    try {
-
-                        const url =
-                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-
-                        const res = await fetch(url, {
-                            headers: {
-                                "Accept": "application/json"
-                            }
-                        });
-
-                        const data = await res.json();
-
-                        if (data && data.display_name && alamatTextarea) {
-
-                            alamatTextarea.value = data.display_name;
-
-                        }
-
-                    } catch (err) {
-
-                        console.error("Gagal ambil alamat", err);
-
-                    }
-
-                });
-
             }
 
+            async function loadKecamatan() {
+                const kotaId = kota.options[kota.selectedIndex]?.dataset.id;
+                if (!kotaId) return;
+                loading(kecamatan);
+                resetSelect(kelurahan, "Pilih Kelurahan");
+                const res = await fetch(`${API}/districts/${kotaId}.json`);
+                const data = await res.json();
+                let html = `<option value="">Pilih Kecamatan</option>`;
+                data.forEach(k => html += `<option value="${k.name}" data-id="${k.id}">${k.name}</option>`);
+                kecamatan.innerHTML = html;
+            }
 
-            /* =========================
-               INIT
-            ========================= */
+            async function loadKelurahan() {
+                const kecId = kecamatan.options[kecamatan.selectedIndex]?.dataset.id;
+                if (!kecId) return;
+                loading(kelurahan);
+                const res = await fetch(`${API}/villages/${kecId}.json`);
+                const data = await res.json();
+                let html = `<option value="">Pilih Kelurahan</option>`;
+                data.forEach(k => html += `<option value="${k.name}">${k.name}</option>`);
+                kelurahan.innerHTML = html;
+            }
+
+            provinsi.addEventListener("change", loadKota);
+            kota.addEventListener("change", loadKecamatan);
+            kecamatan.addEventListener("change", loadKelurahan);
 
             loadProvinsi();
+
+            // Map picker
+            const map = L.map("map").setView([-6.0023, 106.0112], 13);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19
+            }).addTo(map);
+            let marker = null;
+            const latInput = document.querySelector('[name="latitude"]');
+            const lngInput = document.querySelector('[name="longitude"]');
+            const alamatTextarea = document.querySelector('[name="alamat_lengkap"]');
+
+            map.on("click", async e => {
+                const lat = e.latlng.lat.toFixed(8);
+                const lng = e.latlng.lng.toFixed(8);
+                if (marker) marker.setLatLng(e.latlng);
+                else marker = L.marker(e.latlng).addTo(map);
+                latInput.value = lat;
+                lngInput.value = lng;
+                try {
+                    const res = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+                    );
+                    const data = await res.json();
+                    if (data.display_name) alamatTextarea.value = data.display_name;
+                } catch (err) {
+                    console.error(err);
+                }
+            });
 
         });
     </script>

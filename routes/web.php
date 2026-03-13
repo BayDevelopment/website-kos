@@ -198,12 +198,13 @@ Route::middleware([
         Route::post('/kelola-kos/create', [DashboardPemilikController::class, 'prosesCreateKos'])
             ->name('kos.insert');
 
-        Route::get('/kelola-kos/edit', [DashboardPemilikController::class, 'editKos'])
+        Route::get('/kelola-kos/{slug}/edit', [DashboardPemilikController::class, 'editKos'])
             ->name('kos.edit');
 
-        Route::post('/kelola-kos/edit', [DashboardPemilikController::class, 'prosesEditKos'])
-            ->name('kos.edit');
-        Route::post('/kelola-kos/delete', [DashboardPemilikController::class, 'prosesDeleteKos'])
+        Route::put('/kelola-kos/{slug}', [DashboardPemilikController::class, 'prosesEditKos'])
+            ->name('kos.update');
+
+        Route::delete('/kelola-kos/{slug}/delete', [DashboardPemilikController::class, 'deleteKos'])
             ->name('kos.destroy');
 
         Route::post('/kamar', [DashboardPemilikController::class, 'kamarKos'])
