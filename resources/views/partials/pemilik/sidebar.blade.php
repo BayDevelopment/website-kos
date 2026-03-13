@@ -13,9 +13,9 @@
 
     @php
         $user = auth()->user();
-        $pemilik = $user->pemilikKos ?? null;
-        $profilComplete = $pemilik?->is_complete ?? false;
-        $approved = $pemilik?->verification_status === 'approved';
+        $pemilik = $user->identitasPemilik ?? null;
+        $profilComplete = (bool) ($pemilik?->is_complete ?? false);
+        $approved = strtolower(trim($pemilik?->verification_status ?? '')) === 'approved';
     @endphp
 
     <nav class="sidebar-menu">
@@ -40,7 +40,7 @@
                 <span class="menu-text">Kelola Kos</span>
             </a>
 
-            <a href="{{ route('pemilik.kamar.index') }}" class="{{ $navlink === 'Kamar' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Kamar' ? 'active' : '' }}">
                 <i class="fa-solid fa-bed"></i>
                 <span class="menu-text">Kamar</span>
             </a>
@@ -50,27 +50,27 @@
                 <span class="menu-text">Booking</span>
             </a>
 
-            <a href="{{ route('pemilik.penyewa.index') }}" class="{{ $navlink === 'Penyewa' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Penyewa' ? 'active' : '' }}">
                 <i class="fa-solid fa-users"></i>
                 <span class="menu-text">Penyewa</span>
             </a>
 
-            <a href="{{ route('pemilik.pembayaran.index') }}" class="{{ $navlink === 'Pembayaran' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Pembayaran' ? 'active' : '' }}">
                 <i class="fa-solid fa-wallet"></i>
                 <span class="menu-text">Pembayaran</span>
             </a>
 
-            <a href="{{ route('pemilik.ulasan.index') }}" class="{{ $navlink === 'Ulasan' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Ulasan' ? 'active' : '' }}">
                 <i class="fa-solid fa-star"></i>
                 <span class="menu-text">Ulasan</span>
             </a>
 
-            <a href="{{ route('pemilik.pesan.index') }}" class="{{ $navlink === 'Pesan' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Pesan' ? 'active' : '' }}">
                 <i class="fa-solid fa-envelope"></i>
                 <span class="menu-text">Pesan</span>
             </a>
 
-            <a href="{{ route('pemilik.profil') }}" class="{{ $navlink === 'Profil' ? 'active' : '' }}">
+            <a href="#" class="{{ $navlink === 'Profil' ? 'active' : '' }}">
                 <i class="fa-solid fa-user"></i>
                 <span class="menu-text">Profil</span>
             </a>

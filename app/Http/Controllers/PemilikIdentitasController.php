@@ -132,6 +132,10 @@ class PemilikIdentitasController extends Controller
             return redirect()->route('pemilik.profile.identitas.create');
         }
 
-        return view('pemilik.show', compact('identitas'));
+        return view('pemilik.show', [
+            'title' => 'Detail Identitas | RoomKos Daerah Cilegon dan Serang',
+            'navlink' => 'Detail Identitas',
+            'identitas' => $identitas,
+        ]);
     }
 }

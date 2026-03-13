@@ -62,7 +62,7 @@ Route::get('/', function () {
         }
 
         if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('filament.owner.pages.dashboard');
         }
     }
 
@@ -189,14 +189,35 @@ Route::middleware([
         Route::get('/dashboard', [DashboardPemilikController::class, 'index'])
             ->name('dashboard');
 
-        Route::get('/kelola-kos', [DashboardPemilikController::class, 'index'])
+        Route::get('/kelola-kos', [DashboardPemilikController::class, 'indexKos'])
             ->name('kos.index');
+
+        Route::get('/kelola-kos/create', [DashboardPemilikController::class, 'createKos'])
+            ->name('kos.create');
+
+        Route::post('/kelola-kos/create', [DashboardPemilikController::class, 'prosesCreateKos'])
+            ->name('kos.insert');
+
+        Route::get('/kelola-kos/edit', [DashboardPemilikController::class, 'editKos'])
+            ->name('kos.edit');
+
+        Route::post('/kelola-kos/edit', [DashboardPemilikController::class, 'prosesEditKos'])
+            ->name('kos.edit');
+        Route::post('/kelola-kos/delete', [DashboardPemilikController::class, 'prosesDeleteKos'])
+            ->name('kos.destroy');
+
+        Route::post('/kamar', [DashboardPemilikController::class, 'kamarKos'])
+            ->name('kamar.index');
 
         Route::get('/pembayaran/detail', [DashboardPemilikController::class, 'index'])
             ->name('pembayaran.index');
 
         Route::get('/booking/cek', [DashboardPemilikController::class, 'index'])
             ->name('booking.index');
+
+        // profile
+        Route::get('/profile', [DashboardPemilikController::class, 'index'])
+            ->name('profil');
     });
 
 

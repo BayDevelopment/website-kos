@@ -63,6 +63,6 @@ class User extends Authenticatable implements FilamentUser,  MustVerifyEmail
 
     public function identitasPemilik()
     {
-        return $this->hasOne(IdentitasPemilik::class);
+        return $this->hasOne(IdentitasPemilik::class, 'user_id', 'id');
     }
 }

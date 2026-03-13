@@ -100,7 +100,7 @@
             </div>
 
             <div class="grid kos-grid">
-                <article class="card kos-card" data-images="/images/kos/1a.jpg,/images/kos/1b.jpg,/images/kos/1c.jpg">
+                <article class="card kos-card" data-images="#">
                     <div class="kos-media">
                         <img class="kos-img" alt="Kos Lavender">
                         <button class="nav prev" type="button" aria-label="Sebelumnya">‹</button>
@@ -130,7 +130,7 @@
                     </div>
                 </article>
 
-                <article class="card kos-card" data-images="/images/kos/2a.jpg,/images/kos/2b.jpg">
+                <article class="card kos-card" data-images="#">
                     <div class="kos-media">
                         <img class="kos-img" alt="Kos Skyline">
                         <button class="nav prev" type="button" aria-label="Sebelumnya">‹</button>
@@ -159,7 +159,7 @@
                     </div>
                 </article>
 
-                <article class="card kos-card" data-images="/images/kos/3a.jpg,/images/kos/3b.jpg,/images/kos/3c.jpg">
+                <article class="card kos-card" data-images="#">
                     <div class="kos-media">
                         <img class="kos-img" alt="Kos Neo">
                         <button class="nav prev" type="button" aria-label="Sebelumnya">‹</button>
