@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KamarModel;
 use App\Models\Kos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -311,5 +312,79 @@ class DashboardPemilikController extends Controller
         $kos->delete();
 
         return redirect()->route('pemilik.kos.index')->with('success', 'Kos berhasil dihapus.');
+    }
+
+    // FOTO
+    public function fotoKos()
+    {
+        $data = [
+            'title' => 'Foto | RoomKos Daerah Cilegon & Serang'
+        ];
+        return view('pemilik.create-foto-kos', $data);
+    }
+
+
+    // KAMAR
+    public function createKamar($slug)
+    {
+        $kos = Kos::where('slug', $slug)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $data = [
+            'title' => 'Tambah Kamar | RoomKos Daerah Cilegon & Serang',
+            'navlink' => 'Tambah Kamar',
+            'kos' => $kos
+        ];
+
+        return view('pemilik.create-kamar-kos', $data);
+    }
+
+    public function storeKamar(Request $request, $slug)
+    {
+        $kos = Kos::where('slug', $slug)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $request->validate([
+            'nama_kamar' => 'required|max:100',
+            'kode_kamar' => 'required|max:50',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:1'
+        ]);
+
+        KamarModel::create([
+            'kos_id' => $kos->id,
+            'nama_kamar' => $request->nama_kamar,
+            'kode_kamar' => $request->kode_kamar,
+            'harga' => $request->harga,
+            'deposit' => $request->deposit,
+            'luas' => $request->luas,
+            'stok' => $request->stok,
+            'tersedia' => $request->tersedia ?? true,
+            'deskripsi' => $request->deskripsi
+        ]);
+
+        return redirect()
+            ->route('pemilik.kos.index') // halaman kelola kos
+            ->with('success', 'Kamar berhasil ditambahkan');
+    }
+
+    public function detailKos($slug)
+    {
+        $kos = Kos::where('slug', $slug)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $kamar = KamarModel::where('kos_id', $kos->id)
+            ->latest()
+            ->paginate(10);
+
+        return view('pemilik.detail-kos', [
+            'title' => 'Detail Kos | RoomKos',
+            'navlink' => 'Detail Kos',
+            'kos' => $kos,
+            'kamar' => $kamar
+        ]);
     }
 }

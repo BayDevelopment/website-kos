@@ -71,27 +71,51 @@
                         </p>
 
 
-                        {{-- ACTION --}}
                         <div class="kos-actions">
 
                             <a href="{{ route('pemilik.kos.edit', $item->slug) }}" class="btn-edit text-decoration-none">
                                 Edit
                             </a>
 
-                            <a href="{{ route('pemilik.kamar.index', $item->id) }}" class="btn-room text-decoration-none">
-                                Kamar
-                            </a>
+                            <div class="dropdown-setting">
+
+                                <button class="btn-setting">
+                                    <i class="fa-solid fa-gear"></i>
+                                </button>
+
+                                <div class="dropdown-menu-setting">
+
+                                    {{-- <a href="{{ route('pemilik.kos.foto', $item->id) }}">
+                                        <i class="fa-solid fa-image"></i> Kos Foto
+                                    </a>
+
+                                    <a href="{{ route('pemilik.kos.aturan', $item->id) }}">
+                                        <i class="fa-solid fa-scroll"></i> Kos Aturan
+                                    </a> --}}
+
+                                    <a href="{{ route('pemilik.kamar.index', $item->slug) }}">
+                                        <i class="fa-solid fa-bed"></i> Kamar
+                                    </a>
+
+                                    {{-- <a href="{{ route('pemilik.kos.fasilitas', $item->id) }}">
+                                        <i class="fa-solid fa-building"></i> Fasilitas
+                                    </a> --}}
+                                    <a href="{{ route('pemilik.kos.detail', $item->slug) }}">
+                                        <i class="fa-solid fa-list"></i> Detail kos
+                                    </a>
+
+                                </div>
+
+                            </div>
 
                             <form action="{{ route('pemilik.kos.destroy', $item->slug) }}" method="POST"
                                 class="delete-form">
-
                                 @csrf
                                 @method('DELETE')
 
                                 <button class="btn-delete-kos">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
-
                             </form>
 
                         </div>
@@ -129,8 +153,8 @@
 @push('styles')
     <style>
         /* =========================
-                                                                                                                   KOS MANAGEMENT
-                                                                                                                ========================= */
+                                                                                                                                                                           KOS MANAGEMENT
+                                                                                                                                                                        ========================= */
 
         .kos-grid {
             display: grid;
@@ -142,7 +166,8 @@
             background: var(--card);
             border: 1px solid var(--line);
             border-radius: 22px;
-            overflow: hidden;
+            /* overflow: hidden; */
+            overflow: visible;
             box-shadow: var(--shadow);
             transition: all .25s ease;
         }
@@ -239,8 +264,8 @@
         }
 
         /* =========================
-                                                                                                               BUTTON EFFECT
-                                                                                                            ========================= */
+                                                                                                                                                                       BUTTON EFFECT
+                                                                                                                                                                    ========================= */
 
         .kos-actions a,
         .kos-actions button {
@@ -332,8 +357,8 @@
         }
 
         /* =========================
-                                           FIX LINK DECORATION
-                                        ========================= */
+                                                                                                   FIX LINK DECORATION
+                                                                                                ========================= */
 
         a {
             text-decoration: none;
@@ -351,6 +376,68 @@
 
         .kos-actions a:hover {
             text-decoration: none;
+        }
+
+        /* setting dropdown */
+        .dropdown-setting {
+            position: relative;
+        }
+
+        /* tombol gear */
+        .btn-setting {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            background: #f3f4f6;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .btn-setting:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* dropdown keluar dari card */
+        .dropdown-menu-setting {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            min-width: 190px;
+
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+
+            display: none;
+            flex-direction: column;
+
+            z-index: 9999;
+        }
+
+        /* item */
+        .dropdown-menu-setting a {
+            padding: 12px 14px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-menu-setting a:hover {
+            background: #f3f4f6;
+        }
+
+        /* tampilkan dropdown */
+        .dropdown-setting.active .dropdown-menu-setting {
+            display: flex;
         }
     </style>
 @endpush
@@ -380,5 +467,28 @@
                 });
             });
         });
+
+        // card setting buttom
+        document.querySelectorAll(".btn-setting").forEach(btn => {
+
+            btn.addEventListener("click", function(e) {
+
+                e.stopPropagation()
+
+                let dropdown = this.closest(".dropdown-setting")
+
+                document.querySelectorAll(".dropdown-setting")
+                    .forEach(d => d.classList.remove("active"))
+
+                dropdown.classList.toggle("active")
+
+            })
+
+        })
+
+        document.addEventListener("click", function() {
+            document.querySelectorAll(".dropdown-setting")
+                .forEach(d => d.classList.remove("active"))
+        })
     </script>
 @endpush

@@ -204,11 +204,22 @@ Route::middleware([
         Route::put('/kelola-kos/{slug}', [DashboardPemilikController::class, 'prosesEditKos'])
             ->name('kos.update');
 
+        Route::get('/kelola-kos/{slug}/detail', [DashboardPemilikController::class, 'detailKos'])
+            ->name('kos.detail');
+
         Route::delete('/kelola-kos/{slug}/delete', [DashboardPemilikController::class, 'deleteKos'])
             ->name('kos.destroy');
 
-        Route::post('/kamar', [DashboardPemilikController::class, 'kamarKos'])
+        // FOTO
+        Route::post('/{slug}/foto', [DashboardPemilikController::class, 'fotoKos'])
+            ->name('kos.foto.index');
+
+        // KAMAR
+        Route::get('/{slug}/kamar', [DashboardPemilikController::class, 'createKamar'])
             ->name('kamar.index');
+
+        Route::post('/{slug}', [DashboardPemilikController::class, 'storeKamar'])
+            ->name('kamar.store');
 
         Route::get('/pembayaran/detail', [DashboardPemilikController::class, 'index'])
             ->name('pembayaran.index');

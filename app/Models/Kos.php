@@ -50,6 +50,11 @@ class Kos extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function kamar()
+    {
+        return $this->hasMany(KamarModel::class, 'kos_id');
+    }
+
 
     // foto kos
     // public function fotos()
