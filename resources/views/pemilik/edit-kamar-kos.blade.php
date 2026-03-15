@@ -40,20 +40,22 @@
 
             </div>
 
-            {{-- FORM CREATE KAMAR --}}
+
+            {{-- FORM EDIT KAMAR --}}
             <div class="content-card">
 
                 <div class="card-head">
                     <div>
-                        <h2>Tambah Kamar</h2>
-                        <p>Tambahkan kamar baru untuk kos ini</p>
+                        <h2>Edit Kamar</h2>
+                        <p>Perbarui data kamar kos</p>
                     </div>
                 </div>
 
-                <form action="{{ route('pemilik.kamar.store', $kos->slug) }}" method="POST"
+                <form action="{{ route('pemilik.kamar.update', [$kos->slug, $kamar->kode_kamar]) }}" method="POST"
                     onsubmit="return handleSubmitKamar()">
 
                     @csrf
+                    @method('PUT')
 
                     <div class="form-grid">
 
@@ -61,43 +63,29 @@
                         <div class="form-group">
                             <label>Nama Kamar <span class="required">*</span></label>
 
-                            <input type="text" name="nama_kamar" value="{{ old('nama_kamar') }}"
-                                class="form-control @error('nama_kamar') is-invalid @enderror"
-                                placeholder="Contoh: Kamar Standard A" required>
+                            <input type="text" name="nama_kamar" value="{{ old('nama_kamar', $kamar->nama_kamar) }}"
+                                class="form-control @error('nama_kamar') is-invalid @enderror" required>
 
                             @error('nama_kamar')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-
                         </div>
 
 
                         {{-- KODE KAMAR --}}
-                        <div class="form-group">
-
-                            <label>Kode Kamar</label>
-                            <input type="text" class="form-control" value="Otomatis dibuat oleh sistem" readonly>
-
-                            <small class="text-muted">
-                                Kode kamar akan dibuat otomatis: {{ $kodeKamar ?? '-' }}
-                            </small>
-
-                        </div>
-
+                        <input type="text" class="form-control" value="{{ $kamar->kode_kamar }}" readonly>
 
 
                         {{-- HARGA --}}
                         <div class="form-group">
                             <label>Harga / Bulan <span class="required">*</span></label>
 
-                            <input type="number" name="harga" value="{{ old('harga') }}"
-                                class="form-control @error('harga') is-invalid @enderror" placeholder="Contoh: 750000"
-                                required>
+                            <input type="number" name="harga" value="{{ old('harga', $kamar->harga) }}"
+                                class="form-control @error('harga') is-invalid @enderror" required>
 
                             @error('harga')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-
                         </div>
 
 
@@ -105,14 +93,12 @@
                         <div class="form-group">
                             <label>Deposit</label>
 
-                            <input type="number" name="deposit" value="{{ old('deposit') }}"
-                                class="form-control @error('deposit') is-invalid @enderror"
-                                placeholder="Contoh: 300000 (opsional)">
+                            <input type="number" name="deposit" value="{{ old('deposit', $kamar->deposit) }}"
+                                class="form-control @error('deposit') is-invalid @enderror">
 
                             @error('deposit')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-
                         </div>
 
 
@@ -120,13 +106,12 @@
                         <div class="form-group">
                             <label>Luas Kamar (m²)</label>
 
-                            <input type="number" name="luas" value="{{ old('luas') }}"
-                                class="form-control @error('luas') is-invalid @enderror" placeholder="Contoh: 12">
+                            <input type="number" name="luas" value="{{ old('luas', $kamar->luas) }}"
+                                class="form-control @error('luas') is-invalid @enderror">
 
                             @error('luas')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-
                         </div>
 
 
@@ -134,13 +119,12 @@
                         <div class="form-group">
                             <label>Jumlah Stok <span class="required">*</span></label>
 
-                            <input type="number" name="stok" value="{{ old('stok', 1) }}"
-                                class="form-control @error('stok') is-invalid @enderror" placeholder="Contoh: 5" required>
+                            <input type="number" name="stok" value="{{ old('stok', $kamar->stok) }}"
+                                class="form-control @error('stok') is-invalid @enderror" required>
 
                             @error('stok')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-
                         </div>
 
 
@@ -150,11 +134,11 @@
 
                             <select name="tersedia" class="form-control">
 
-                                <option value="1" {{ old('tersedia') == '1' ? 'selected' : '' }}>
+                                <option value="1" {{ old('tersedia', $kamar->tersedia) == 1 ? 'selected' : '' }}>
                                     Tersedia
                                 </option>
 
-                                <option value="0" {{ old('tersedia') == '0' ? 'selected' : '' }}>
+                                <option value="0" {{ old('tersedia', $kamar->tersedia) == 0 ? 'selected' : '' }}>
                                     Tidak Tersedia
                                 </option>
 
@@ -170,8 +154,7 @@
 
                         <label>Deskripsi</label>
 
-                        <textarea name="deskripsi" rows="4" class="form-control @error('deskripsi') is-invalid @enderror"
-                            placeholder="Contoh: Kamar dengan AC, kamar mandi dalam, dan lemari">{{ old('deskripsi') }}</textarea>
+                        <textarea name="deskripsi" rows="4" class="form-control @error('deskripsi') is-invalid @enderror">{{ old('deskripsi', $kamar->deskripsi) }}</textarea>
 
                         @error('deskripsi')
                             <span class="text-danger">{{ $message }}</span>
@@ -185,11 +168,11 @@
                         <button type="submit" class="btn-save-kamar" id="btnSaveKamar">
 
                             <span class="btn-icon">
-                                <i class="fa-solid fa-save"></i>
+                                <i class="fa-solid fa-pen"></i>
                             </span>
 
                             <span class="btn-text">
-                                Simpan Kamar
+                                Update Kamar
                             </span>
 
                             <span class="btn-loading">
@@ -198,7 +181,6 @@
                             </span>
 
                         </button>
-
 
                     </div>
 

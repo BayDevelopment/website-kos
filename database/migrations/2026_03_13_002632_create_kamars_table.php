@@ -28,6 +28,9 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
 
             $table->timestamps();
+
+            // // proteksi kode kamar dalam 1 kos
+            // $table->unique(['kos_id', 'kode_kamar']);
         });
     }
 

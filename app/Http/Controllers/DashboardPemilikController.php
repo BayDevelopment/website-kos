@@ -331,14 +331,30 @@ class DashboardPemilikController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
+        $lastKamar = KamarModel::where('kos_id', $kos->id)
+            ->orderBy('kode_kamar', 'desc')
+            ->first();
+
+        if ($lastKamar) {
+            preg_match('/\d+$/', $lastKamar->kode_kamar, $match);
+            $nextNumber = (int)$match[0] + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $kodeKamar = 'KMR-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
         $data = [
             'title' => 'Tambah Kamar | RoomKos Daerah Cilegon & Serang',
             'navlink' => 'Tambah Kamar',
-            'kos' => $kos
+            'kos' => $kos,
+            'kodeKamar' => $kodeKamar
         ];
+
 
         return view('pemilik.create-kamar-kos', $data);
     }
+
 
     public function storeKamar(Request $request, $slug)
     {
@@ -347,16 +363,107 @@ class DashboardPemilikController extends Controller
             ->firstOrFail();
 
         $request->validate([
-            'nama_kamar' => 'required|max:100',
-            'kode_kamar' => 'required|max:50',
-            'harga' => 'required|numeric',
-            'stok' => 'required|integer|min:1'
+            'nama_kamar' => 'required|string|max:100',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:1',
+            'deposit' => 'nullable|numeric|min:0',
+            'luas' => 'nullable|integer|min:1',
+            'deskripsi' => 'nullable|string'
         ]);
 
-        KamarModel::create([
-            'kos_id' => $kos->id,
+        DB::beginTransaction();
+
+        try {
+
+            // Ambil kamar terakhir dalam kos ini
+            $lastKamar = KamarModel::where('kos_id', $kos->id)
+                ->orderBy('kode_kamar', 'desc')
+                ->first();
+
+            if ($lastKamar) {
+
+                preg_match('/\d+$/', $lastKamar->kode_kamar, $match);
+                $lastNumber = isset($match[0]) ? (int) $match[0] : 0;
+
+                $newNumber = $lastNumber + 1;
+            } else {
+
+                $newNumber = 1;
+            }
+
+            // Format kode kamar
+            $kodeKamar = 'KMR-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+
+            KamarModel::create([
+                'kos_id' => $kos->id,
+                'nama_kamar' => $request->nama_kamar,
+                'kode_kamar' => $kodeKamar,
+                'harga' => $request->harga,
+                'deposit' => $request->deposit,
+                'luas' => $request->luas,
+                'stok' => $request->stok,
+                'tersedia' => $request->tersedia ?? true,
+                'deskripsi' => $request->deskripsi
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('pemilik.kos.detail', $kos->slug)
+                ->with('success', 'Kamar berhasil ditambahkan');
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan kamar');
+        }
+    }
+
+
+
+    public function editKamar($slugKos, $kodeKamar)
+    {
+        $kos = Kos::where('slug', $slugKos)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $kamar = KamarModel::where('kode_kamar', $kodeKamar)
+            ->where('kos_id', $kos->id)
+            ->firstOrFail();
+
+        $data = [
+            'title' => 'Edit Kamar | RoomKos Daerah Cilegon & Serang',
+            'navlink' => 'Edit Kamar',
+            'kos' => $kos,
+            'kamar' => $kamar
+        ];
+
+        return view('pemilik.edit-kamar-kos', $data);
+    }
+
+    public function updateKamar(Request $request, $slugKos, $kodeKamar)
+    {
+        $kos = Kos::where('slug', $slugKos)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $kamar = KamarModel::where('kode_kamar', $kodeKamar)
+            ->where('kos_id', $kos->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'nama_kamar' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:1',
+            'deposit' => 'nullable|numeric|min:0',
+            'luas' => 'nullable|integer|min:1',
+            'deskripsi' => 'nullable|string'
+        ]);
+
+        $kamar->update([
             'nama_kamar' => $request->nama_kamar,
-            'kode_kamar' => $request->kode_kamar,
             'harga' => $request->harga,
             'deposit' => $request->deposit,
             'luas' => $request->luas,
@@ -366,8 +473,28 @@ class DashboardPemilikController extends Controller
         ]);
 
         return redirect()
-            ->route('pemilik.kos.index') // halaman kelola kos
-            ->with('success', 'Kamar berhasil ditambahkan');
+            ->route('pemilik.kos.detail', $kos->slug)
+            ->with('success', 'Kamar berhasil diperbarui');
+    }
+
+    public function deleteKamar($slugKos, $kodeKamar)
+    {
+        // Ambil kos milik user
+        $kos = Kos::where('slug', $slugKos)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Ambil kamar berdasarkan kode kamar dan kos
+        $kamar = KamarModel::where('kode_kamar', $kodeKamar)
+            ->where('kos_id', $kos->id)
+            ->firstOrFail();
+
+        // Hapus kamar
+        $kamar->delete();
+
+        return redirect()
+            ->route('pemilik.kos.detail', $kos->slug)
+            ->with('success', 'Kamar berhasil dihapus.');
     }
 
     public function detailKos($slug)

@@ -84,22 +84,6 @@
                                 </button>
 
                                 <div class="dropdown-menu-setting">
-
-                                    {{-- <a href="{{ route('pemilik.kos.foto', $item->id) }}">
-                                        <i class="fa-solid fa-image"></i> Kos Foto
-                                    </a>
-
-                                    <a href="{{ route('pemilik.kos.aturan', $item->id) }}">
-                                        <i class="fa-solid fa-scroll"></i> Kos Aturan
-                                    </a> --}}
-
-                                    <a href="{{ route('pemilik.kamar.index', $item->slug) }}">
-                                        <i class="fa-solid fa-bed"></i> Kamar
-                                    </a>
-
-                                    {{-- <a href="{{ route('pemilik.kos.fasilitas', $item->id) }}">
-                                        <i class="fa-solid fa-building"></i> Fasilitas
-                                    </a> --}}
                                     <a href="{{ route('pemilik.kos.detail', $item->slug) }}">
                                         <i class="fa-solid fa-list"></i> Detail kos
                                     </a>
@@ -153,8 +137,8 @@
 @push('styles')
     <style>
         /* =========================
-                                                                                                                                                                           KOS MANAGEMENT
-                                                                                                                                                                        ========================= */
+                                                                                                                                                                               KOS MANAGEMENT
+                                                                                                                                                                            ========================= */
 
         .kos-grid {
             display: grid;
@@ -264,8 +248,8 @@
         }
 
         /* =========================
-                                                                                                                                                                       BUTTON EFFECT
-                                                                                                                                                                    ========================= */
+                                                                                                                                                                           BUTTON EFFECT
+                                                                                                                                                                        ========================= */
 
         .kos-actions a,
         .kos-actions button {
@@ -357,8 +341,8 @@
         }
 
         /* =========================
-                                                                                                   FIX LINK DECORATION
-                                                                                                ========================= */
+                                                                                                       FIX LINK DECORATION
+                                                                                                    ========================= */
 
         a {
             text-decoration: none;

@@ -221,6 +221,21 @@ Route::middleware([
         Route::post('/{slug}', [DashboardPemilikController::class, 'storeKamar'])
             ->name('kamar.store');
 
+        Route::get(
+            '/kamar/{slugKos}/{kodeKamar}/edit',
+            [DashboardPemilikController::class, 'editKamar']
+        )->name('kamar.edit');
+
+        Route::delete('/kamar/{slugKos}/{kodeKamar}/delete', [DashboardPemilikController::class, 'deleteKamar'])
+            ->name('kamar.destroy');
+
+        Route::put(
+            '/kamar/{slugKos}/{kodeKamar}/update',
+            [DashboardPemilikController::class, 'updateKamar']
+        )->name('kamar.update');
+
+
+
         Route::get('/pembayaran/detail', [DashboardPemilikController::class, 'index'])
             ->name('pembayaran.index');
 
